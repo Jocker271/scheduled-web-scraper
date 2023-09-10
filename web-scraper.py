@@ -1,8 +1,24 @@
 #!/usr/bin/python
 
 import csv
-from datetime import datetime
+import logging
+import os
 import urllib.request
+from datetime import datetime
+from logging.handlers import RotatingFileHandler
+
+
+def setup_logger():
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    filename = os.path.join(dir_path, 'app.log')
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.INFO)
+    handler = RotatingFileHandler(filename, maxBytes=5000, backupCount=3)
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s: %(message)s',
+                                  "%Y-%m-%d %H:%M:%S")
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+    return logger
 
 
 def get_url_list():
@@ -10,7 +26,9 @@ def get_url_list():
     Reads the url_list.csv and returns all urls
     @return: list[str] -> list of urls
     """
-    with open("./url_list.csv", 'r') as url_file:
+    dir_path = os.path.dirname(os.path.realpath(__file__))
+    full_file_path = os.path.join(dir_path, "url_list.csv")
+    with open(full_file_path, 'r') as url_file:
         csvreader = csv.reader(url_file)
         next(csvreader)
         url_list = [row[0] for row in csvreader if row]
@@ -18,20 +36,21 @@ def get_url_list():
 
 
 def fetch_web_pages():
-    """Requests all urls
-    Prints Error Messages for failing requests.
-    """
+    """Requests all urls"""
     url_list = (get_url_list())
+    page_counter = 0
     for url in url_list:
         try:
             web_page = urllib.request.urlopen(url)
             result_code = web_page.getcode()
-            if result_code != 200:
-                print(f"Code {result_code} for: {url}")
-                continue
-            save_page_to_file(web_page)
+            if result_code == 200:
+                page_counter += 1
+                save_page_to_file(web_page)
+            else:
+                logger.warning(f"Code {result_code} for '{url}'")
         except ValueError:
-            print(f"Failed request for: {url}")
+            logger.error(f"Failed request for '{url}'")
+    logger.info(f"Scraped {page_counter} pages")
 
 
 def save_page_to_file(web_page):
@@ -41,18 +60,12 @@ def save_page_to_file(web_page):
         url_name = web_page.url.split("//")[1].replace(
             ".", "_").replace("/", "_")
         file_name = f"{url_name}_{timestamp}"
-        with open(f"./archive/{file_name}.html", "wb") as new_file:
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        full_file_path = os.path.join(dir_path, f"archive/{file_name}.html")
+        with open(full_file_path, "wb") as new_file:
             new_file.write(page_content)
 
 
-def print_all_cookies(web_page):
-    # print all the cookies
-    cookies = list(
-        filter(lambda x: x[0] == "Set-Cookie", web_page.headers.items()))
-    for crumb in cookies:
-        cookie_name, cookie_value = crumb[1].split("=", 1)
-        print(cookie_name, cookie_value.split(";")[0])
-
-
 if __name__ == '__main__':
+    logger = setup_logger()
     fetch_web_pages()

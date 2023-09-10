@@ -1,4 +1,4 @@
-# web-scraper
+# simple-web-scraper
 This simple project is used to automatically generate views of specific webpages.
 
 
@@ -29,8 +29,7 @@ Of course, the cron job only runs when the computer is on, so the setup on a ser
 
 ___
 ## TODOs
+- extend readme.md (setup.sh, how to stop cron service)
 - Adding a random time for retrieving the web pages
-- Create a log
-- Save the read HTML pages to separate files
 - Cron Alternative for Windows
 - ...
