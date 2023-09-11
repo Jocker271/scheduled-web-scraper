@@ -7,4 +7,5 @@ mkdir archive
 SCRIPTPATH="$( cd -- "$(dirname "$0")" || exit >/dev/null 2>&1 ; pwd -P )"
 (crontab -l; echo "*/1 * * * * python $SCRIPTPATH/web-scraper.py")|awk '!x[$0]++'|crontab -
 
-sudo service cron start
+# start cron jobs
+service cron start

@@ -8,28 +8,48 @@ This simple project is used to automatically generate views of specific webpages
 
 
 ## Installation
-### Linux
 The Python script alone is not sufficient for a repetitive action, so we need to set up a cron job.
+Of course, the cron job only runs when the computer is on, so the setup on a server is recommended.
+
+### Automatically (Linux)
+run the `setup.sh`. You may have to make the file executable first with `chmod +x setup.sh`.
+
+### Manually (Linux)
+Since Git can't index empty folders and I don't want to work with a .gitkeep file, you need to manually create a folder called "archive" in this project with `mkdir archiv`.
 
 Open the crontab file with `crontab -e` and create a new cron job by adding a line according to the given scheme (minute hour day month day-of-week command-line-to-execute).
 The time parameters can be freely selected. However, the web scraper script must be called in the command. Make sure you specify the correct path to the python file. 
 
 The new line could look like one of the following examples:
 - Run the web-scraper every full hour:\
-`0 * * * * /usr/bin/test-script.sh`
+`0 * * * * /usr/stupid-web-scraper/main.py`
 - Run the web-scraper every 15 minutes from 8 am to 6 pm from Monday to Friday:\
-`*/15 8-18 * * 1-6 /usr/bin/test-script.sh`\
+`*/15 8-18 * * 1-6 /usr/stupid-web-scraper/main.py`\
 <sub>See [wiki.ubuntuusers.de/Cron](https://wiki.ubuntuusers.de/Cron/) for more information.</sub>
-
 
 Save the file and make sure cron is actually running with `service cron status`.
 If not you have to start the service with `sudo service cron start`.
 
-Of course, the cron job only runs when the computer is on, so the setup on a server is recommended.
+## Usage
+Store the links to all webpages to be called in `url_list.csv` file.
+
+Start the cron jobs
+```bash
+service cron start
+```
+\
+Stop the cron jobs
+```bash
+service cron stop
+```
 
 ___
-## TODOs
-- extend readme.md (setup.sh, how to stop cron service)
-- Adding a random time for retrieving the web pages
-- Cron Alternative for Windows
-- ...
+## Roadmap
+
+- [x] Core functionality to scrap multiple webpages
+- [x] Add Logging
+- [x] Implementation for different operating systems
+    - [x] Linux (using cron job)
+    - [ ] Windows (using scheduler)
+- [ ] Adding a random time for retrieving the web pages
+- [ ] Send daily summary as email
