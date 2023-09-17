@@ -3,8 +3,9 @@
 import csv
 import logging
 import os
+import random
 import urllib.request
-from datetime import datetime
+from datetime import datetime, timedelta
 from logging.handlers import RotatingFileHandler
 
 import config
@@ -91,6 +92,12 @@ def get_available_memory():
 
 
 if __name__ == "__main__":
+    if config.random_delay_min:
+        # adds random delay to the web scraper
+        random_delay = random.randint(0, config.random_delay_min)
+        end_time = datetime.now() + timedelta(minutes=random_delay)
+        while datetime.now() < end_time:
+            continue
     dir_path = os.path.dirname(os.path.realpath(__file__))
     logger = setup_logger()
     available_memory = get_available_memory()

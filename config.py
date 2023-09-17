@@ -1,5 +1,13 @@
 #!/usr/bin/python
 
+"""This file contains the settings of the web scraper script"""
+
+# === General ===
+random_delay_min = 0  # minutes
+# random_delay_min hides the systematics of calls for the site operator.
+# Should be coordinated with the time setting of the cron job. If the cron runs
+# every 15 minutes, an optional delay of one hour is not useful.
+
 # === Saving Web Pages ===
 store_web_pages = True  # (True/False)
 max_storage_memory = 12  # in MB
