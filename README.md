@@ -51,5 +51,8 @@ ___
 - [x] Implementation for different operating systems
     - [x] Linux (using cron job)
     - [ ] Windows (using scheduler)
+- [x] Set configs in a separate file
+- [x] Set limit for saving web pages
 - [ ] Adding a random time for retrieving the web pages
 - [ ] Send daily summary as email
+- [ ] Use docker
