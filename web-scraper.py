@@ -12,7 +12,10 @@ import config
 
 
 def setup_logger():
-    """Creates a logger and returns it"""
+    """
+    Creates a rotating file logger according to the settings.
+    @return: Logger
+    """
     filename = os.path.join(dir_path, "app.log")
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.INFO)
@@ -26,9 +29,37 @@ def setup_logger():
     return logger
 
 
+def get_archive_path():
+    """
+    Returns the absolute path to the archive directory.
+    @return: String dir path
+    """
+    archive_path = False
+    config_path = config.store_file_directory
+    if config_path:
+        if not os.path.isabs(config_path):
+            config_path = os.path.join(dir_path, config_path)
+        if os.path.isdir(config_path):
+            archive_path = config_path
+    if not archive_path:
+        archive_path = os.path.join(dir_path, "archive")
+    return archive_path
+
+
+def get_available_memory():
+    """
+    Checks if the backup directory has enough memory according to the setting.
+    @return: boolean
+    """
+    dir_size = sum([os.path.getsize(x) for x in os.scandir(archive_path)])
+    dir_size = dir_size / 1048576  # converts byte to MiB
+    has_available_memory = config.max_storage_memory > dir_size
+    return has_available_memory
+
+
 def get_url_list():
     """
-    Reads the url_list.csv and returns all urls
+    Reads the url_list.csv and returns all urls.
     @return: list[str] -> list of urls
     """
     full_file_path = os.path.join(dir_path, "url_list.csv")
@@ -50,7 +81,7 @@ def save_page_to_file(web_page):
         url_name = web_page.url.split("//")[1].replace(
             ".", "_").replace("/", "_")
         file_name = f"{url_name}_{timestamp}.html"
-        full_file_path = os.path.join(dir_path, f"archive/{file_name}")
+        full_file_path = os.path.join(archive_path, file_name)
         with open(full_file_path, "wb") as new_file:
             new_file.write(page_content)
 
@@ -58,7 +89,7 @@ def save_page_to_file(web_page):
 def fetch_web_pages():
     """
     Requests all urls.
-    This is the main function to handle the webpage scraping
+    This is the main function to handle the webpage scraping.
     """
     url_list = (get_url_list())
     page_counter = 0
@@ -79,18 +110,6 @@ def fetch_web_pages():
     logger.info(f"Scraped {page_counter} pages")
 
 
-def get_available_memory():
-    """
-    Checks if there is enough memory according to the setting
-    @return: boolean
-    """
-    archive_path = os.path.join(dir_path, "archive")
-    dir_size = sum([os.path.getsize(x) for x in os.scandir(archive_path)])
-    dir_size = dir_size / 1048576  # converts byte to MiB
-    has_available_memory = config.max_storage_memory > dir_size
-    return has_available_memory
-
-
 if __name__ == "__main__":
     if config.random_delay_min:
         # adds random delay to the web scraper
@@ -99,6 +118,7 @@ if __name__ == "__main__":
         while datetime.now() < end_time:
             continue
     dir_path = os.path.dirname(os.path.realpath(__file__))
+    archive_path = get_archive_path()
     logger = setup_logger()
     available_memory = get_available_memory()
     fetch_web_pages()

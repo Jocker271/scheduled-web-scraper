@@ -1,5 +1,5 @@
-# simple-web-scraper
-This simple project is used to automatically generate views of specific webpages.
+# scheduled-web-scraper
+This simple project is used to automatically generate backups of specific webpages.
 
 
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
@@ -12,7 +12,7 @@ The Python script alone is not sufficient for a repetitive action, so we need to
 Of course, the cron job only runs when the computer is on, so the setup on a server is recommended.
 
 ### Automatically (Linux)
-run the `setup.sh`. You may have to make the file executable first with `chmod +x setup.sh`.
+Run the `setup.sh`. You may have to make the file executable first with `chmod +x setup.sh`.
 
 ### Manually (Linux)
 Since Git can't index empty folders and I don't want to work with a .gitkeep file, you need to manually create a folder called "archive" in this project with `mkdir archiv`.
@@ -32,6 +32,7 @@ If not you have to start the service with `sudo service cron start`.
 
 ## Usage
 Store the links to all webpages to be called in `url_list.csv` file.
+All other settings can be adjusted in `config.py` file.
 
 Start the cron jobs
 ```bash
@@ -48,12 +49,13 @@ ___
 
 - [x] Core functionality to scrap multiple webpages
 - [x] Add Logging
-- [x] Implementation for different operating systems
-    - [x] Linux (using cron job)
-    - [ ] Windows (using scheduler)
-    - [ ] using Docker
 - [x] Set configs in a separate file
 - [x] Set limit for saving web pages
 - [x] Adding a random time for retrieving the web pages
-- [ ] Parallelize the requests
-- [ ] Send daily summary as email
+- [x] Adjustable path to the backup (archive) folder
+- [x] Implementation for different operating systems
+    - [x] Linux (using cron job)
+    - [ ] Windows (using scheduler)
+    - [ ] Using Docker
+- [ ] Parallelize the web requests
+- [ ] Send regular summaries as emails
